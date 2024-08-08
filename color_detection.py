@@ -1,13 +1,20 @@
 import cv2
-import numpy as np
 import pandas as pd
-import argparse
+import tkinter as tk
+from tkinter import filedialog
 
-#Creating argument parser to take image path from command line
-ap = argparse.ArgumentParser()
-ap.add_argument('-i', '--image', required=True, help="Image Path")
-args = vars(ap.parse_args())
-img_path = args['image']
+# Creating the Tkinter root window
+root = tk.Tk()
+root.withdraw()  # Hide the main window
+
+# Using a file dialog to get the image path interactively
+img_path = filedialog.askopenfilename(title="Select Image", filetypes=[("Image files", "*.jpg;*.jpeg;*.png")])
+
+# Check if a file was selected
+if not img_path:
+    print("No file selected. Exiting.")
+    exit()
+
 
 #Reading the image with opencv
 img = cv2.imread(img_path)
@@ -67,6 +74,8 @@ while(1):
 
     #Break the loop when user hits 'esc' key    
     if cv2.waitKey(20) & 0xFF ==27:
+        break
+    elif cv2.waitKey(20) == -1 and cv2.getWindowProperty('image', cv2.WND_PROP_VISIBLE) < 1:  # Check if the window is closed
         break
     
 cv2.destroyAllWindows()
