@@ -1,7 +1,6 @@
-from PyQt6.QtWidgets import QApplication,QFileDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox, QListWidget
+from PyQt6.QtWidgets import QApplication,QFileDialog, QWidget, QVBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt
-import os
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap,QIcon
 import cv2
 import pandas as pd
 
@@ -9,6 +8,8 @@ import pandas as pd
 app=QApplication([])
 window=QWidget()
 window.setWindowTitle("Color Detector")
+icon_path=("icon.png")
+window.setWindowIcon(QIcon(icon_path))
 window.resize(900,700)
 
 #Widget/Objects
@@ -18,6 +19,7 @@ picture.setStyleSheet(f"background-color: white; color: black;border: 2px solid;
 btn_load=QPushButton("Load Image")
 color=QLabel("--")
 color.setAlignment(Qt.AlignmentFlag.AlignCenter)
+color.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 color.hide()
 
 #App Design
@@ -39,11 +41,14 @@ r=g=b=xpos=ypos=0
 index=["color","color_name","hex","R","G","B"]
 csv=pd.read_csv('colors.csv',names=index,header=None)
 class colordetect(QWidget):
+    
+    def __init__(self):
+        super().__init__()
+        self.img=None
+        self.image=None
+        self.scaled_image=None
+    
     def load_img(self):
-        def __init__(self):
-            super().__init__()
-            self.img=None
-
         img_path,_ = QFileDialog.getOpenFileName(None,"Select Image", "","Image files( *.jpg;*.jpeg;*.png)")
 
         # Check if a file was selected
@@ -52,12 +57,20 @@ class colordetect(QWidget):
             self.img=cv2.imread(img_path)
             self.show_img()
 
+
+
         
     
     def show_img(self):
         picture.hide()
         w,h=picture.width(),picture.height()
         self.scaled_image=self.image.scaled(w,h,Qt.AspectRatioMode.KeepAspectRatio)
+        
+        picture.setFixedSize(self.scaled_image.width(),self.scaled_image.height())
+
+        picture.setStyleSheet(f"border: 2px solid; border-radius: 5px")
+        
+        picture.setAlignment(Qt.AlignmentFlag.AlignCenter)
         picture.setPixmap(self.scaled_image)
         picture.show()
     
@@ -74,6 +87,8 @@ class colordetect(QWidget):
 
     def mousePressEvent(self,event):
         global r,g,b,xpos,ypos,clicked
+        if self.img is None:
+            pass
         if event.button()==Qt.MouseButton.LeftButton and self.img is not None:
             #get coords
             label__pos=picture.mapFromGlobal(event.globalPosition().toPoint())
@@ -113,6 +128,6 @@ btn_load.clicked.connect(main.load_img)
 window.mousePressEvent=main.mousePressEvent
 
 
-
 window.show()
 app.exec()
+
