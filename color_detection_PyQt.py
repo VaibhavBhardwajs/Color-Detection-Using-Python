@@ -13,8 +13,12 @@ window.resize(900,700)
 
 #Widget/Objects
 picture=QLabel("Image Will Appear here")
+picture.setAlignment(Qt.AlignmentFlag.AlignCenter)
+picture.setStyleSheet(f"background-color: white; color: black;border: 2px solid; border-radius: 5px")
 btn_load=QPushButton("Load Image")
 color=QLabel("--")
+color.setAlignment(Qt.AlignmentFlag.AlignCenter)
+color.hide()
 
 #App Design
 master_layout=QVBoxLayout()
@@ -98,6 +102,7 @@ class colordetect(QWidget):
             color_name=self.getColorName(r,g,b)
             color.setText(f'Color: {color_name} | R={r} G={g} B={b}')
             color.setStyleSheet(f"background-color: rgb({r}, {g}, {b}); color: white;")
+            color.show()
             clicked=True
 
 
